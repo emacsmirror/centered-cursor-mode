@@ -222,6 +222,8 @@ This command exists, because mwheel-scroll caused strange
 behaviour with automatic recentering."
 ;;  (interactive (list last-input-event))
   (interactive "e")
+  (when (region-active-p)
+    (deactivate-mark))
   (let* ((mods (delq 'click (delq 'double (delq 'triple (event-modifiers event)))))
          (amt (assoc mods mouse-wheel-scroll-amount)))
     ;;(message "%S" mods)
@@ -307,7 +309,7 @@ the center. Just the variable ccm-vpos is set."
 
 (defun ccm-position-cursor ()
   "Do the actual recentering at the position `ccm-vpos'."
-  (unless (member this-command ccm-ignored-commands)
+  (unless (or (member this-command ccm-ignored-commands) (mouse-movement-p last-command-event))
     (unless ccm-vpos
       (ccm-vpos-recenter))
     (unless (minibufferp (current-buffer))
